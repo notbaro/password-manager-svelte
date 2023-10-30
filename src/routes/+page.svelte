@@ -1,17 +1,14 @@
 <script lang="ts">
-
-  import {firebaseApp, firebaseAuth, firestore} from '$lib/firebaseinit';
-  import {createUserWithEmailAndPassword, type User} from 'firebase/auth'
-  import { userCred } from '$lib/stores';
-  import SucessAlert from './SucessAlert.svelte';
-  import ErrorAlert from './ErrorAlert.svelte';
-
-
+  import { firebaseApp, firebaseAuth, firestore } from "$lib/firebaseinit";
+  import { createUserWithEmailAndPassword, type User } from "firebase/auth";
+  import { userCred } from "$lib/stores";
+  import SucessAlert from "./SucessAlert.svelte";
+  import ErrorAlert from "./ErrorAlert.svelte";
 
   let message: String = "";
   let alertType: "success" | "error" | null = null;
 
-  const createUser = async (): Promise<User | null> =>{
+  const createUser = async (): Promise<User | null> => {
     try {
       const result = await createUserWithEmailAndPassword(
         firebaseAuth,
@@ -24,24 +21,28 @@
     } catch (error: any) {
       console.error(error.code);
       alertType = "error";
-      if(error.code === "auth/email-already-in-use"){
+      if (error.code === "auth/email-already-in-use") {
         message = "Email already in use";
-      } else if(error.code === "auth/invalid-email"){
+      } else if (error.code === "auth/invalid-email") {
         message = "Invalid email";
-      } else if(error.code === "auth/weak-password"){
+      } else if (error.code === "auth/weak-password") {
         message = "Password must be at least 6 characters";
+      } else if (error.code === "auth/missing-email") {
+        message = "Please enter your email";
+      } else if (error.code === "auth/missing-password") {
+        message = "Missing password";
       } else {
         message = "Unknown error";
       }
       return null;
-    } 
+    }
   };
-
 </script>
+
 {#if alertType === "success"}
-  <SucessAlert {message}/>
+  <SucessAlert {message} />
 {:else if alertType === "error"}
-  <ErrorAlert {message}/>
+  <ErrorAlert {message} />
 {/if}
 <h1 class="text-center text-3xl font-bold">Sign up with email and password</h1>
 <div class="form-control p-10 min-w-full container flex flex-col items-center">
@@ -57,8 +58,9 @@
     placeholder="Password"
     bind:value={$userCred.password}
   />
-  <button class="btn btn-accent btn-outline btn-wide" on:click={createUser}>Sign Up</button>
-  
+  <button class="btn btn-accent btn-outline btn-wide" on:click={createUser}
+    >Sign Up</button
+  >
 </div>
 
 <style lang="postcss">

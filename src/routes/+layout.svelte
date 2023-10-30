@@ -2,8 +2,11 @@
   import "../app.css";
 </script>
 
-<nav class="navbar border-red-600 border-s-2 bg-base-100">
-  <div class="navbar-center">
+<nav class="navbar bg-primary text-primary-content mb-5">
+  <div class="navbar-start">
+    <a href="/" class="text-2xl pl-5 normal-case font-semibold">Password Manager</a> 
+  </div>
+  <div class="navbar-end">
     <a href="/" class="btn btn-ghost normal-case text-xl navbar-center"
       >Sign Up</a
     >

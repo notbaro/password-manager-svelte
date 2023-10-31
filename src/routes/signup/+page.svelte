@@ -2,7 +2,7 @@
   import { firebaseApp, firebaseAuth, firestore } from "$lib/firebaseinit";
   import { createUserWithEmailAndPassword, type User } from "firebase/auth";
   import { userCred } from "$lib/stores";
-  import SucessAlert from "$lib/SucessAlert.svelte";
+  import SuccessAlert from "$lib/SuccessAlert.svelte";
   import ErrorAlert from "$lib/ErrorAlert.svelte";
 
   let message: String = "";
@@ -41,7 +41,7 @@
 </script>
 
 {#if alertType === "success"}
-  <SucessAlert {message} />
+  <SuccessAlert {message} />
 {:else if alertType === "error"}
   <ErrorAlert {message} />
 {/if}

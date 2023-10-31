@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import {type User } from "firebase/auth";
+import type { User } from "firebase/auth";
 
 export interface Cred {
   username: string;
@@ -9,5 +9,6 @@ export interface Cred {
 export const userCred = writable({
   email: "",
   password: "",
+  data: null as User | null,
 });
 

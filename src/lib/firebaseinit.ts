@@ -8,6 +8,7 @@ import {
   GoogleAuthProvider,
   type User,
   signInWithEmailAndPassword,
+  onAuthStateChanged
 } from "firebase/auth";
 
 const firebaseConfig = {
@@ -27,3 +28,9 @@ export const firestore = getFirestore(firebaseApp);
 export const provider = new GoogleAuthProvider();
 export const firebaseAuth = getAuth(firebaseApp);
 //connectAuthEmulator(auth, "http://localhost:9099");
+
+onAuthStateChanged(firebaseAuth, (user) => {
+  if (user) {
+    console.log(`User is signed in as ${user.email}`);
+  }``
+});

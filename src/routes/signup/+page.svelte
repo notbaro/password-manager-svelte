@@ -2,8 +2,8 @@
   import { firebaseApp, firebaseAuth, firestore } from "$lib/firebaseinit";
   import { createUserWithEmailAndPassword, type User } from "firebase/auth";
   import { userCred } from "$lib/stores";
-  import SucessAlert from "./SucessAlert.svelte";
-  import ErrorAlert from "./ErrorAlert.svelte";
+  import SucessAlert from "$lib/SucessAlert.svelte";
+  import ErrorAlert from "$lib/ErrorAlert.svelte";
 
   let message: String = "";
   let alertType: "success" | "error" | null = null;

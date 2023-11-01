@@ -4,11 +4,13 @@
   import { userCred } from "$lib/stores";
   import SuccessAlert from "$lib/SuccessAlert.svelte";
   import ErrorAlert from "$lib/ErrorAlert.svelte";
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
+
   onMount(() => {
     $userCred.email = "";
     $userCred.password = "";
   });
+  
 
   let user: User | null = null;
   let message: String = "";
@@ -72,6 +74,12 @@
       user = await signInUser();
       console.log(user);
     }}>Log In</button
+  >
+  <button
+    class="btn btn-accent btn-outline btn-wide"
+    on:click={() => {
+      console.log(firebaseAuth.currentUser);     
+    }}>currentUser</button
   >
 </div>
 

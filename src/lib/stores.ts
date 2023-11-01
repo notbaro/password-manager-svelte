@@ -6,9 +6,16 @@ export interface Cred {
   password: string;
 }
 
-export const userCred = writable({
-  email: "",
-  password: "",
-  data: null as User | null,
-});
+function createCred() {
+  const { subscribe, set, update } = writable({
+    email: "",
+    password: "",
+  });
+  return {
+    subscribe,
+    set,
+    reset: () => set({ email: "", password: "" }),
+  };
+}
 
+export const userCred = createCred();

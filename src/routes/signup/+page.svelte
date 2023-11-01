@@ -1,24 +1,25 @@
 <script lang="ts">
   import { firebaseApp, firebaseAuth, firestore } from "$lib/firebaseinit";
   import { createUserWithEmailAndPassword, type User } from "firebase/auth";
-  import { userCred } from "$lib/stores";
   import SuccessAlert from "$lib/SuccessAlert.svelte";
   import ErrorAlert from "$lib/ErrorAlert.svelte";
 
   let message: String = "";
   let alertType: "success" | "error" | null = null;
   let user: User | null = null;
+  let email: string, password: string;
 
-  const createUser = async (): Promise<User | null> => {
+  const createUser = async () => {
     try {
       const result = await createUserWithEmailAndPassword(
         firebaseAuth,
-        $userCred.email,
-        $userCred.password
+        email,
+        password
       );
-      message = `Successfully created user with email: ${$userCred.email} and password: ${$userCred.password}`;
+      message = `Successfully created user with email: ${email}`;
+      email = "";
+      password = "";
       alertType = "success";
-      return result.user;
     } catch (error: any) {
       console.error(error.code);
       alertType = "error";
@@ -35,7 +36,6 @@
       } else {
         message = "Unknown error";
       }
-      return null;
     }
   };
 </script>
@@ -45,27 +45,30 @@
 {:else if alertType === "error"}
   <ErrorAlert {message} />
 {/if}
-<h1 class="text-center text-3xl font-bold">Sign up with email and password</h1>
-<div class="form-control p-10 min-w-full container flex flex-col items-center">
-  <input
-    class="input input-bordered"
-    type="text"
-    placeholder="Username"
-    bind:value={$userCred.email}
-  />
-  <input
-    class="input input-bordered mb-5 mt-2"
-    type="password"
-    placeholder="Password"
-    bind:value={$userCred.password}
-  />
-  <button
-    class="btn btn-accent btn-outline btn-wide"
-    on:click={async () => {
-      user = await createUser();
-      console.log(user?.email);
-    }}>Sign Up</button
+<div class="card">
+  <h1 class="text-center text-3xl font-bold">
+    Sign up with email and password
+  </h1>
+  <div
+    class="form-control p-10 min-w-full container flex flex-col items-center"
   >
+    <input
+      class="input input-bordered"
+      type="text"
+      placeholder="Username"
+      bind:value={email}
+    />
+    <input
+      class="input input-bordered mb-5 mt-2"
+      type="password"
+      placeholder="Password"
+      bind:value={password}
+    />
+    <button
+      class="btn btn-accent btn-outline btn-wide"
+      on:click={createUser}>Sign Up</button
+    >
+  </div>
 </div>
 
 <style lang="postcss">

@@ -38,6 +38,7 @@
       }
     }
   };
+
 </script>
 
 {#if alertType === "success"}
@@ -65,6 +66,7 @@
       bind:value={password}
     />
     <button
+      id="signupButton"
       class="btn btn-accent btn-outline btn-wide"
       on:click={createUser}>Sign Up</button
     >

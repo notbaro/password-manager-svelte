@@ -69,17 +69,12 @@
     bind:value={$userCred.password}
   />
   <button
+    id="loginButton"
     class="btn btn-accent btn-outline btn-wide"
     on:click={async () => {
       user = await signInUser();
       console.log(user);
     }}>Log In</button
-  >
-  <button
-    class="btn btn-accent btn-outline btn-wide"
-    on:click={() => {
-      console.log(firebaseAuth.currentUser);     
-    }}>currentUser</button
   >
 </div>
 

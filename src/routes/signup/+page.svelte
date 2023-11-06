@@ -3,11 +3,22 @@
   import { createUserWithEmailAndPassword, type User } from "firebase/auth";
   import SuccessAlert from "$lib/SuccessAlert.svelte";
   import ErrorAlert from "$lib/ErrorAlert.svelte";
+  import { beforeUpdate, onDestroy, onMount } from "svelte";
 
   let message: String = "";
   let alertType: "success" | "error" | null = null;
   let user: User | null = null;
-  let email: string, password: string;
+  let email = "";
+  let password = "";
+
+ onMount(() => {
+   
+        email = '';
+        password = '';
+
+});
+
+
 
   const createUser = async () => {
     try {
@@ -38,7 +49,6 @@
       }
     }
   };
-
 </script>
 
 {#if alertType === "success"}
@@ -50,7 +60,7 @@
   <h1 class="text-center text-3xl font-bold">
     Sign up with email and password
   </h1>
-  <div
+  <form
     class="form-control p-10 min-w-full container flex flex-col items-center"
   >
     <input
@@ -70,7 +80,7 @@
       class="btn btn-accent btn-outline btn-wide"
       on:click={createUser}>Sign Up</button
     >
-  </div>
+  </form>
 </div>
 
 <style lang="postcss">

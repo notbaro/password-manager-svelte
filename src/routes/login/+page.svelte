@@ -1,31 +1,35 @@
 <script lang="ts">
   import { firebaseApp, firebaseAuth, firestore } from "$lib/firebaseinit";
   import { signInWithEmailAndPassword, type User } from "firebase/auth";
-  import { userCred } from "$lib/stores";
   import SuccessAlert from "$lib/SuccessAlert.svelte";
   import ErrorAlert from "$lib/ErrorAlert.svelte";
-  import { onMount, tick } from "svelte";
+  import { beforeUpdate, onMount, tick } from "svelte";
+  import { goto } from "$app/navigation";
 
-  onMount(() => {
-    $userCred.email = "";
-    $userCred.password = "";
-  });
-  
+  let email = "";
+  let password = "";
 
-  let user: User | null = null;
   let message: String = "";
   let alertType: "success" | "error" | null = null;
+  onMount(() => {
+    email = "";
+    password = "";
+  });
 
-  const signInUser = async (): Promise<User | null> => {
+  const signInUser = async () => {
     try {
       const result = await signInWithEmailAndPassword(
         firebaseAuth,
-        $userCred.email,
-        $userCred.password
+        email,
+        password
       );
-      message = `Successfully signed in user with email: ${$userCred.email}`;
+      message = `Successfully signed in user with email: ${email}. Redirecting...`;
       alertType = "success";
-      return result.user;
+      email = "";
+      password = "";
+      setTimeout(() => {
+        goto("/");
+      }, 2000);
     } catch (error: any) {
       alertType = "error";
       console.error(error.code);
@@ -44,7 +48,6 @@
       } else {
         message = error.code;
       }
-      return null;
     }
   };
 </script>
@@ -54,28 +57,31 @@
 {:else if alertType === "error"}
   <ErrorAlert {message} />
 {/if}
-<h1 class="text-3xl font-bold text-center">Log in with email and password</h1>
-<div class="form-control p-10 min-w-full container flex flex-col items-center">
-  <input
-    class="input input-bordered"
-    type="text"
-    placeholder="Username"
-    bind:value={$userCred.email}
-  />
-  <input
-    class="input input-bordered mb-5 mt-2"
-    type="password"
-    placeholder="Password"
-    bind:value={$userCred.password}
-  />
-  <button
-    id="loginButton"
-    class="btn btn-accent btn-outline btn-wide"
-    on:click={async () => {
-      user = await signInUser();
-      console.log(user);
-    }}>Log In</button
+<div class="card">
+  <h1 class="text-center text-3xl font-bold">
+    Log In with email and password
+  </h1>
+  <form
+    class="form-control p-10 min-w-full container flex flex-col items-center"
   >
+    <input
+      class="input input-bordered"
+      type="text"
+      placeholder="Username"
+      bind:value={email}
+    />
+    <input
+      class="input input-bordered mb-5 mt-2"
+      type="password"
+      placeholder="Password"
+      bind:value={password}
+    />
+    <button
+      id="signupButton"
+      class="btn btn-accent btn-outline btn-wide"
+      on:click={signInUser}>Log In</button
+    >
+  </form>
 </div>
 
 <style lang="postcss">

@@ -26,6 +26,7 @@
 	"type": "module",
 	"dependencies": {
 		"firebase": "^10.5.2",
-		"jquery": "^3.7.1"
+		"jquery": "^3.7.1",
+		"nanoid": "^5.0.2"
 	}
 }

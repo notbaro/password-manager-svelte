@@ -3,7 +3,6 @@
   import { onNavigate } from "$app/navigation";
   import { page } from "$app/stores";
   import { onMount, tick } from "svelte";
-  import Profile from "./Profile.svelte";
   import { firebaseAuth } from "$lib/firebaseinit";
   import { onAuthStateChanged } from "firebase/auth";
   import DropdownProfile from "./DropdownProfile.svelte";
@@ -60,7 +59,6 @@
           >
         </li>
       {:else}
-        <Profile />
         <DropdownProfile />
       {/if}
     </ul>

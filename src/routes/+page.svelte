@@ -6,6 +6,7 @@
   import { doc, setDoc } from "firebase/firestore";
   import { enhance } from "$app/forms";
 
+  export let data;
   export let user: User | null = firebaseAuth.currentUser;
   onMount(async () => {
     await tick();
@@ -26,17 +27,12 @@
     //@ts-ignore
     await setDoc(doc(firestore, user?.uid, name), {
       id: id,
-      password: password,
+      password: data.data,
+      iv: data.iv,
     });
   };
 
-  const testEncrypt = () => {
-    //@ts-ignore
-    const encrypted = encrypt(password, user?.uid);
-    console.log(encrypted);
-    //@ts-ignore
-    console.log(decrypt(encrypted, user?.uid));
-  };
+  console.log(data);
 </script>
 
 <h1 class="text-3xl font-bold m-5 text-center">Password Manager</h1>
@@ -74,9 +70,9 @@
       <button
         id="signupButton"
         class="btn btn-accent btn-outline btn-wide"
+        type="submit"
         on:click={createDoc}>Add Password</button
       >
-      <button class="btn btn-accent btn-outline btn-wide" type="submit" />
     </form>
   {/if}
 </div>

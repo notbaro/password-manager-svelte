@@ -1,6 +1,10 @@
 <script lang="ts">
   import { firebaseApp, firebaseAuth, firestore } from "$lib/firebaseinit";
-  import { signInWithEmailAndPassword, type User } from "firebase/auth";
+  import {
+    sendPasswordResetEmail,
+    signInWithEmailAndPassword,
+    type User,
+  } from "firebase/auth";
   import SuccessAlert from "$lib/SuccessAlert.svelte";
   import ErrorAlert from "$lib/ErrorAlert.svelte";
   import { beforeUpdate, onMount, tick } from "svelte";
@@ -33,21 +37,39 @@
     } catch (error: any) {
       alertType = "error";
       console.error(error.code);
-      if (error.code === "auth/invalid-email") {
-        message = "Invalid email";
-      } else if (error.code === "auth/user-disabled") {
-        message = "User disabled";
-      } else if (error.code === "auth/user-not-found") {
-        message = "User not found";
-      } else if (error.code === "auth/invalid-login-credentials") {
-        message = "Wrong email/password";
-      } else if (error.code === "auth/missing-email") {
-        message = "Please enter your email";
-      } else if (error.code === "auth/missing-password") {
-        message = "Missing password";
-      } else {
-        message = error.code;
-      }
+      message = errorCodeToMessage(error.code); 
+    }
+  };
+
+  const resetPassword = async () => {
+    sendPasswordResetEmail(firebaseAuth, email)
+      .then(() => {
+        message = `Password reset email sent to ${email}.`;
+        alertType = "success";
+        document.getElementById("modalClose")?.click();
+      })
+      .catch((error) => {
+        message = errorCodeToMessage(error.code);  
+        alertType = "error";
+      });
+  };
+
+  const errorCodeToMessage = (code: string) => {
+    switch (code) {
+      case "auth/invalid-email":
+        return "Invalid email";
+      case "auth/user-disabled":
+        return "User disabled";
+      case "auth/user-not-found":
+        return "User not found";
+      case "auth/invalid-login-credentials":
+        return "Wrong email/password";
+      case "auth/missing-email":
+        return "Please enter your email";
+      case "auth/missing-password":
+        return "Missing password";
+      default:
+        return code;
     }
   };
 </script>
@@ -58,16 +80,14 @@
   <ErrorAlert {message} />
 {/if}
 <div class="card">
-  <h1 class="text-center text-3xl font-bold">
-    Log In with email and password
-  </h1>
+  <h1 class="text-center text-3xl font-bold">Log In with email and password</h1>
   <form
     class="form-control p-10 min-w-full container flex flex-col items-center"
   >
     <input
       class="input input-bordered"
       type="text"
-      placeholder="Username"
+      placeholder="Email"
       bind:value={email}
     />
     <input
@@ -81,6 +101,28 @@
       class="btn btn-accent btn-outline btn-wide"
       on:click={signInUser}>Log In</button
     >
+    <button
+      class="btn btn-accent btn-outline btn-wide"
+      onclick="resetPwdModal.showModal()">Reset Password</button
+    >
+    <dialog id="resetPwdModal" class="modal">
+      <div class="modal-box flex flex-col items-center">
+        <h3 class="font-bold text-lg">Reset Password</h3>
+        <input
+          class="input input-bordered border-primary my-4"
+          type="email"
+          placeholder="Email"
+          bind:value={email}
+        />
+        <button
+          class="btn btn-accent btn-outline btn-wide"
+          on:click={resetPassword}>Send to email</button
+        >
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button id="modalClose">close</button>
+      </form>
+    </dialog>
   </form>
 </div>
 

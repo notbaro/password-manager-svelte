@@ -1,14 +1,15 @@
 <script lang="ts">
-  import { firebaseApp, firebaseAuth, firestore } from "$lib/firebaseinit";
+  import { firebaseAuth } from "$lib/firebaseinit";
   import {
     sendPasswordResetEmail,
     signInWithEmailAndPassword,
-    type User,
   } from "firebase/auth";
   import SuccessAlert from "$lib/SuccessAlert.svelte";
   import ErrorAlert from "$lib/ErrorAlert.svelte";
-  import { beforeUpdate, onMount, tick } from "svelte";
-  import { goto } from "$app/navigation";
+  import { onMount } from "svelte";
+  import { goto } from "$app/navigation"
+  import {errorCodeToMessage} from '$lib/utils'
+
 
   let email = "";
   let password = "";
@@ -20,6 +21,10 @@
     password = "";
   });
 
+  /**
+   * Sign in user with email and password.
+   * @returns {Promise<void>}
+   */
   const signInUser = async () => {
     try {
       const result = await signInWithEmailAndPassword(
@@ -41,7 +46,11 @@
     }
   };
 
-  const resetPassword = async () => {
+  /**
+   * Sends a password reset email to the user's email address.
+   * @returns {Promise<void>}
+   */
+  const resetPassword = async (): Promise<void> => {
     sendPasswordResetEmail(firebaseAuth, email)
       .then(() => {
         message = `Password reset email sent to ${email}.`;
@@ -54,24 +63,7 @@
       });
   };
 
-  const errorCodeToMessage = (code: string) => {
-    switch (code) {
-      case "auth/invalid-email":
-        return "Invalid email";
-      case "auth/user-disabled":
-        return "User disabled";
-      case "auth/user-not-found":
-        return "User not found";
-      case "auth/invalid-login-credentials":
-        return "Wrong email/password";
-      case "auth/missing-email":
-        return "Please enter your email";
-      case "auth/missing-password":
-        return "Missing password";
-      default:
-        return code;
-    }
-  };
+  
 </script>
 
 {#if alertType === "success"}

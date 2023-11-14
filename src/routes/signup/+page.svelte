@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { firebaseApp, firebaseAuth, firestore } from "$lib/firebaseinit";
+  import { firebaseAuth } from "$lib/firebaseinit";
   import { createUserWithEmailAndPassword, type User } from "firebase/auth";
   import SuccessAlert from "$lib/SuccessAlert.svelte";
   import ErrorAlert from "$lib/ErrorAlert.svelte";
-  import { beforeUpdate, onDestroy, onMount } from "svelte";
+  import { onMount } from "svelte";
+  import { errorCodeToMessage } from "$lib/utils";
 
   let message: String = "";
   let alertType: "success" | "error" | null = null;
@@ -11,15 +12,15 @@
   let email = "";
   let password = "";
 
- onMount(() => {
-   
-        email = '';
-        password = '';
+  onMount(() => {
+    email = "";
+    password = "";
+  });
 
-});
-
-
-
+  /**
+   * Creates a new user account with the provided email and password using Firebase authentication.
+   * @returns {Promise<void>}
+   */
   const createUser = async () => {
     try {
       const result = await createUserWithEmailAndPassword(
@@ -34,19 +35,7 @@
     } catch (error: any) {
       console.error(error.code);
       alertType = "error";
-      if (error.code === "auth/email-already-in-use") {
-        message = "Email already in use";
-      } else if (error.code === "auth/invalid-email") {
-        message = "Invalid email";
-      } else if (error.code === "auth/weak-password") {
-        message = "Password must be at least 6 characters";
-      } else if (error.code === "auth/missing-email") {
-        message = "Please enter your email";
-      } else if (error.code === "auth/missing-password") {
-        message = "Missing password";
-      } else {
-        message = "Unknown error";
-      }
+      message = errorCodeToMessage(error.code);
     }
   };
 </script>

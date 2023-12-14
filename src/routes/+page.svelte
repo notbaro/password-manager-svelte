@@ -12,6 +12,7 @@
   onMount(async () => {
     await tick();
     user = firebaseAuth.currentUser;
+    await fetchDB();
   });
   onAuthStateChanged(firebaseAuth, (u) => {
     if (u) {
@@ -46,7 +47,7 @@
     });
   };
 
-  const test = async () => {
+  const fetchDB = async () => {
     const docSnap = await getDocs(collection(firestore, String(user?.uid)));
     docSnap.forEach((doc) => {
       console.log(doc.id, " => ", doc.data());
@@ -58,6 +59,24 @@
       });
     });
   };
+
+  const decryptDB = async () => {
+    pwEntries.forEach(async (entry) => {
+      const res = await fetch("/api/decrypt", {
+        method: "POST",
+        body: JSON.stringify({
+          password: entry.password,
+          iv: entry.iv,
+          uid: user?.uid,
+        }),
+        headers: {
+          "content-type": "application/json",
+        },
+      });
+      console.log(await res.json());
+      // entry.password = await res.json();
+    });
+  }
 
   beforeUpdate(async () => {
     await tick();
@@ -75,6 +94,7 @@
       use:enhance
     >
       <input
+        required
         class="input input-bordered mt-2"
         type="text"
         placeholder="Name of the website/app"
@@ -82,6 +102,7 @@
         bind:value={name}
       />
       <input
+        required
         class="input input-bordered mt-2"
         type="text"
         placeholder="Username/Email"
@@ -89,6 +110,7 @@
         bind:value={id}
       />
       <input
+        required
         class="input input-bordered mb-5 mt-2"
         type="password"
         placeholder="Password"
@@ -105,21 +127,7 @@
       <!--TODO inplement post req-->
       <button
         class="btn btn-accent btn-outline btn-wide"
-        on:click={async () => {
-          const res = await fetch("/api/decrypt", {
-            method: "POST",
-            body: JSON.stringify({
-             password: pwEntries[0].password,
-              iv: pwEntries[0].iv,
-              uid: user?.uid,
-            }),
-            headers: {
-              "content-type": "application/json",
-            },
-          });
-          const d = await res.json();
-          console.log(d);
-        }}>test</button
+        on:click={decryptDB}>test</button
       >
     </form>
   {/if}

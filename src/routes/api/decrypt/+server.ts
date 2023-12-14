@@ -15,5 +15,5 @@ export const POST: RequestHandler = async ({request}) => {
   };
 
   const decrypted = decrypt(encryption, uid);
-  return json({ message: password + " " + iv + " " + uid }, { status: 200 });
+  return json({ message: decrypted }, { status: 200 });
 };

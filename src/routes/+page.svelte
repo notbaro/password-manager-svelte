@@ -5,7 +5,6 @@
   import { beforeUpdate, onMount, tick } from "svelte";
   import { collection, doc, getDocs, setDoc } from "firebase/firestore";
   import { enhance } from "$app/forms";
-  import { stringify } from "postcss";
 
   export let data;
   export let user: User | null = firebaseAuth.currentUser;
@@ -45,12 +44,12 @@
       password: data.data,
       iv: data.iv,
     });
+    pwEntries.push({site: name, id: id, iv: data.iv, password: data.data});
   };
 
   const fetchDB = async () => {
     const docSnap = await getDocs(collection(firestore, String(user?.uid)));
     docSnap.forEach((doc) => {
-      console.log(doc.id, " => ", doc.data());
       pwEntries.push({
         site: doc.id,
         id: doc.data().id,
@@ -73,10 +72,10 @@
           "content-type": "application/json",
         },
       });
-      console.log(await res.json());
-      // entry.password = await res.json();
+      const decrypted = await res.json();
+      entry.password = decrypted.message;
     });
-  }
+  };
 
   beforeUpdate(async () => {
     await tick();
@@ -112,7 +111,7 @@
       <input
         required
         class="input input-bordered mb-5 mt-2"
-        type="password"
+        type="text"
         placeholder="Password"
         name="password"
         bind:value={password}
@@ -125,11 +124,17 @@
         on:click={createDoc}>Add Password</button
       >
       <!--TODO inplement post req-->
-      <button
-        class="btn btn-accent btn-outline btn-wide"
-        on:click={decryptDB}>test</button
-      >
     </form>
+    <button class="btn btn-accent btn-outline btn-wide" on:click={decryptDB}
+      >test</button
+    >
+    <button class="btn btn-accent btn-outline btn-wide" on:click={() => {
+      pwEntries.forEach((entry) => {
+        console.log(entry);
+      });
+    }}
+      >Print db</button
+    >
   {/if}
 </div>
 

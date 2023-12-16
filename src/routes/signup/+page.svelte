@@ -5,6 +5,7 @@
   import ErrorAlert from "$lib/ErrorAlert.svelte";
   import { onMount } from "svelte";
   import { errorCodeToMessage } from "$lib/utils";
+  import { goto } from "$app/navigation";
 
   let message: String = "";
   let alertType: "success" | "error" | null = null;
@@ -28,10 +29,13 @@
         email,
         password
       );
-      message = `Successfully created user with email: ${email}`;
+      message = `Successfully created user with email: ${email}. Redirecting...`;
       email = "";
       password = "";
       alertType = "success";
+      setTimeout(() => {
+        goto("/");
+      }, 3000);
     } catch (error: any) {
       console.error(error.code);
       alertType = "error";

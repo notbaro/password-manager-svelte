@@ -3,15 +3,23 @@
   import { onAuthStateChanged, signOut, type User } from "firebase/auth";
   import UserCard from "./UserCard.svelte";
   import { beforeUpdate, onMount, tick } from "svelte";
-  import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+  import {
+    collection,
+    deleteDoc,
+    doc,
+    getDocs,
+    onSnapshot,
+    query,
+    setDoc,
+  } from "firebase/firestore";
   import { enhance } from "$app/forms";
+  import { passwordEntries } from "$lib/stores";
+  import SuccessAlert from "$lib/SuccessAlert.svelte";
+  import ErrorAlert from "$lib/ErrorAlert.svelte";
 
-  export let data;
   export let user: User | null = firebaseAuth.currentUser;
   onMount(async () => {
-    await tick();
     user = firebaseAuth.currentUser;
-    await fetchDB();
   });
   onAuthStateChanged(firebaseAuth, (u) => {
     if (u) {
@@ -20,77 +28,75 @@
       user = null;
     }
   });
-  class PasswordEntry {
+  interface PasswordEntry {
     site: string;
     id: string;
-    iv: string;
     password: string;
-    constructor(site: string, id: string, iv: string, password: string) {
-      this.site = site;
-      this.id = id;
-      this.iv = iv;
-      this.password = password;
-    }
   }
   let name = "";
   let id = "";
   let password = "";
   let pwEntries: PasswordEntry[] = [];
+  let init = false;
+  let message: String = "";
+  let alertType: "success" | "error" | null = null;
 
   const createDoc = async () => {
+    if (!name || !id || !password) {
+      alertType = "error";
+      message = "Please fill all the fields";
+      setTimeout(() => {
+        alertType = null;
+        message = "";
+      }, 3000);
+    }
     //@ts-ignore
     await setDoc(doc(firestore, user?.uid, name), {
       id: id,
-      password: data.data,
-      iv: data.iv,
+      password: password,
     });
-    pwEntries.push({site: name, id: id, iv: data.iv, password: data.data});
+    pwEntries.push({ site: name, id: id, password: password });
+    updateStore();
   };
 
-  const fetchDB = async () => {
-    const docSnap = await getDocs(collection(firestore, String(user?.uid)));
-    docSnap.forEach((doc) => {
-      pwEntries.push({
+  const updateStore = async () => {
+    const docsnap = await getDocs(collection(firestore, String(user?.uid)));
+    let pwe: PasswordEntry[] = [];
+    docsnap.forEach((doc) => {
+      pwe.push({
         site: doc.id,
         id: doc.data().id,
-        iv: doc.data().iv,
         password: doc.data().password,
       });
     });
+    console.log(pwe);
+    passwordEntries.set(pwe);
+    init = true;
+    alertType = "success";
+    message = "Password entry changed successfully";
+    setTimeout(() => {
+      alertType = null;
+      message = "";
+    }, 3000);
   };
 
-  const decryptDB = async () => {
-    pwEntries.forEach(async (entry) => {
-      const res = await fetch("/api/decrypt", {
-        method: "POST",
-        body: JSON.stringify({
-          password: entry.password,
-          iv: entry.iv,
-          uid: user?.uid,
-        }),
-        headers: {
-          "content-type": "application/json",
-        },
-      });
-      const decrypted = await res.json();
-      entry.password = decrypted.message;
-    });
+  const deleteEntry = async (i: number) => {
+    await deleteDoc(doc(firestore, String(user?.uid), $passwordEntries[i].site));
+    await updateStore();
   };
-
-  beforeUpdate(async () => {
-    await tick();
-  });
 </script>
 
+{#if alertType === "success"}
+  <SuccessAlert {message} />
+{:else if alertType === "error"}
+  <ErrorAlert {message} />
+{/if}
 <h1 class="text-3xl font-bold m-5 text-center">Password Manager</h1>
 <div class="form-control p-10 min-w-full container flex flex-col items-center">
   {#if user}
     <h2 class="text-2xl font-bold m-5 text-center">Hello, {user?.email}</h2>
     <form
       class="form-control p-10 min-w-full container flex flex-col items-center"
-      method="POST"
-      action="?/encrypt"
-      use:enhance
     >
       <input
         required
@@ -123,18 +129,48 @@
         type="submit"
         on:click={createDoc}>Add Password</button
       >
-      <!--TODO inplement post req-->
     </form>
-    <button class="btn btn-accent btn-outline btn-wide" on:click={decryptDB}
-      >test</button
-    >
-    <button class="btn btn-accent btn-outline btn-wide" on:click={() => {
-      pwEntries.forEach((entry) => {
-        console.log(entry);
-      });
-    }}
-      >Print db</button
-    >
+    {#key $passwordEntries}
+      {#each $passwordEntries as entry, i}
+        <div class="collapse collapse-arrow bg-base-200 w-96">
+          <input type="radio" name="my-accordion-2" />
+          <div class="collapse-title text-xl font-medium">{entry.site}</div>
+          <div class="collapse-content flex justify-between">
+            <div class="flex-grow">
+              <p>{entry.id}</p>
+              <p>{entry.password}</p>
+            </div>
+            <div>
+              <button
+                class="btn btn-circle btn-error btn-outline"
+                on:click={async () => {
+                  await deleteEntry(i);
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  /></svg
+                >
+              </button>
+            </div>
+          </div>
+        </div>
+      {/each}
+    {/key}
+    {#if !init}
+      <button class="btn btn-accent btn-outline btn-wide" on:click={updateStore}
+        >Show Passwords</button
+      >
+    {/if}
   {/if}
 </div>
 

@@ -40,6 +40,10 @@
       console.error(error.code);
       alertType = "error";
       message = errorCodeToMessage(error.code);
+      setTimeout(() => {
+        alertType = null;
+        message = "";
+      }, 3000);
     }
   };
 </script>
@@ -59,7 +63,7 @@
     <input
       class="input input-bordered"
       type="text"
-      placeholder="Username"
+      placeholder="Email"
       bind:value={email}
     />
     <input

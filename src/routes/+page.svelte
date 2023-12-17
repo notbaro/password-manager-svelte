@@ -169,7 +169,7 @@
       {/each}
     {/key}
   {/if}
-  {#if !init}
+  {#if !init && user}
     <button class="btn btn-accent btn-outline btn-wide" on:click={updateStore}
       >Show Passwords</button
     >

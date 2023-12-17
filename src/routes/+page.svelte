@@ -81,7 +81,9 @@
   };
 
   const deleteEntry = async (i: number) => {
-    await deleteDoc(doc(firestore, String(user?.uid), $passwordEntries[i].site));
+    await deleteDoc(
+      doc(firestore, String(user?.uid), $passwordEntries[i].site)
+    );
     await updateStore();
   };
 </script>
@@ -93,7 +95,7 @@
 {/if}
 <h1 class="text-3xl font-bold m-5 text-center">Password Manager</h1>
 <div class="form-control p-10 min-w-full container flex flex-col items-center">
-  {#if user}
+  {#if init}
     <h2 class="text-2xl font-bold m-5 text-center">Hello, {user?.email}</h2>
     <form
       class="form-control p-10 min-w-full container flex flex-col items-center"
@@ -166,11 +168,11 @@
         </div>
       {/each}
     {/key}
-    {#if !init}
-      <button class="btn btn-accent btn-outline btn-wide" on:click={updateStore}
-        >Show Passwords</button
-      >
-    {/if}
+  {/if}
+  {#if !init}
+    <button class="btn btn-accent btn-outline btn-wide" on:click={updateStore}
+      >Show Passwords</button
+    >
   {/if}
 </div>
 

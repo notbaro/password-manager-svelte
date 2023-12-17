@@ -59,7 +59,7 @@
     <input
       class="input input-bordered"
       type="text"
-      placeholder="Username"
+      placeholder="Email"
       bind:value={email}
     />
     <input

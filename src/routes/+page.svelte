@@ -95,8 +95,11 @@
 {/if}
 <h1 class="text-3xl font-bold m-5 text-center">Password Manager</h1>
 <div class="form-control p-10 min-w-full container flex flex-col items-center">
-  {#if init}
+  {#if user}
     <h2 class="text-2xl font-bold m-5 text-center">Hello, {user?.email}</h2>
+  {/if}
+  {#if init}
+    
     <form
       class="form-control p-10 min-w-full container flex flex-col items-center"
     >

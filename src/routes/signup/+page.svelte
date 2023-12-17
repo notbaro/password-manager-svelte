@@ -40,6 +40,10 @@
       console.error(error.code);
       alertType = "error";
       message = errorCodeToMessage(error.code);
+      setTimeout(() => {
+        alertType = null;
+        message = "";
+      }, 3000);
     }
   };
 </script>

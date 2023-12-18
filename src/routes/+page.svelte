@@ -41,6 +41,11 @@
   let message: String = "";
   let alertType: "success" | "error" | null = null;
 
+  /**
+   * Creates a new document in Firestore with the provided name, id, and password.
+   * If any of the fields are missing, an error alert is displayed.
+   * After creating the document, the new entry is added to the pwEntries array and the store is updated.
+   */
   const createDoc = async () => {
     if (!name || !id || !password) {
       alertType = "error";
@@ -59,6 +64,11 @@
     updateStore();
   };
 
+  /**
+   * Updates the store with the latest password entries from the Firestore database.
+   * 
+   * @returns {Promise<void>} A promise that resolves when the store is updated.
+   */
   const updateStore = async () => {
     const docsnap = await getDocs(collection(firestore, String(user?.uid)));
     let pwe: PasswordEntry[] = [];
@@ -80,6 +90,11 @@
     }, 3000);
   };
 
+  /**
+   * Deletes an entry at the specified index.
+   * @param {number} i - The index of the entry to delete.
+   * @returns {Promise<void>}
+   */
   const deleteEntry = async (i: number) => {
     await deleteDoc(
       doc(firestore, String(user?.uid), $passwordEntries[i].site)

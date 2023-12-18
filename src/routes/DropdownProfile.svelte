@@ -4,6 +4,10 @@
   import UserCard from "./UserCard.svelte";
   import { goto } from "$app/navigation";
 
+  /**
+   * Logs the user out by calling the signOut function with the firebaseAuth object.
+   * Displays an alert with the error code if an error occurs.
+   */
   const logout = async () => {
     try {
       await signOut(firebaseAuth);
@@ -11,6 +15,12 @@
       alert(error.code);
     }
   };
+  /**
+   * Routes to the specified page.
+   * @param {string} route - The route to navigate to.
+   * @param {boolean} replaceState - Whether to replace the current state in the history.
+   * @returns {Promise<void>}
+   */
   async function routeToPage(route: string, replaceState: boolean) {
     goto(`/${route}`, { replaceState });
   }

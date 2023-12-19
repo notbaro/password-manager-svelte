@@ -90,11 +90,11 @@
     />
     <button
       id="signupButton"
-      class="btn btn-accent btn-outline btn-wide"
+      class="btn btn-primary btn-wide"
       on:click={signInUser}>Log In</button
     >
     <button
-      class="btn btn-accent btn-outline btn-wide"
+      class="btn btn-secondary btn-wide mt-1"
       onclick="resetPwdModal.showModal()">Reset Password</button
     >
     <dialog id="resetPwdModal" class="modal">

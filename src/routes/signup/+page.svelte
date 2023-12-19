@@ -74,7 +74,7 @@
     />
     <button
       id="signupButton"
-      class="btn btn-accent btn-outline btn-wide"
+      class="btn btn-primary btn-wide"
       on:click={createUser}>Sign Up</button
     >
   </form>

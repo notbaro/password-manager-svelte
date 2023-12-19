@@ -145,7 +145,7 @@
       <input type="hidden" name="uid" value={user?.uid} />
       <button
         id="signupButton"
-        class="btn btn-accent btn-outline btn-wide"
+        class="btn btn-primary btn-wide"
         type="submit"
         on:click={createDoc}>Add Password</button
       >
@@ -188,7 +188,7 @@
     {/key}
   {/if}
   {#if !init && user}
-    <button class="btn btn-accent btn-outline btn-wide" on:click={updateStore}
+    <button class="btn btn-secondary btn-wide" on:click={updateStore}
       >Show Passwords</button
     >
   {/if}
